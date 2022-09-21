@@ -29,5 +29,5 @@ impl Display for ShopKind {
 
 #[async_trait]
 pub trait FetchShop {
-    async fn fetch(&self, shop_kind: ShopKind) -> Result<String, String>;
+    async fn fetch(&mut self, shop_kind: ShopKind) -> Result<String, String>;
 }
