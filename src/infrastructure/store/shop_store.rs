@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use crate::domain::shop::ShopKind;
+use std::collections::HashMap;
 
 #[derive(PartialEq, Eq)]
 pub struct ShopStore {
