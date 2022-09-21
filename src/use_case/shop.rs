@@ -1,14 +1,12 @@
 use crate::{
     domain::shop::{FetchShop, ShopKind},
     infrastructure::fetch::shop::FetchShopImpl,
-    service::context::Context,
+    service::context::Ctx,
 };
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use tokio_stream::StreamExt;
 
-pub async fn check_shop_update(
-    ctx: Arc<Mutex<Context>>,
-    shop_kind: ShopKind,
-) -> Result<bool, String> {
+pub async fn check_shop_update(ctx: Ctx, shop_kind: ShopKind) -> Result<bool, String> {
     let ctx = Arc::clone(&ctx);
 
     let mut fetch_shop = FetchShopImpl::new();
@@ -24,4 +22,31 @@ pub async fn check_shop_update(
     let is_updated = !is_eq;
 
     Ok(is_updated)
+}
+
+pub async fn check_all_shop_updates(ctx: Ctx) -> Result<Vec<ShopKind>, String> {
+    println!("Hello");
+
+    let shop_kind_iter = enum_iterator::all::<ShopKind>();
+    let stream = tokio_stream::iter(shop_kind_iter);
+    let result = stream
+        .then(|shop_kind| async {
+            match check_shop_update(ctx.clone(), shop_kind.clone()).await {
+                Ok(result) => {
+                    if result {
+                        Some(shop_kind)
+                    } else {
+                        None
+                    }
+                }
+                Err(_) => None,
+            }
+        })
+        .filter_map(|v| v)
+        .collect::<Vec<_>>()
+        .await;
+
+    println!("{:?}", result);
+
+    Ok(result)
 }
