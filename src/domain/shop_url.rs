@@ -2,7 +2,9 @@ use super::shop::ShopKind;
 use chrono::{FixedOffset, TimeZone, Utc};
 use std::collections::HashMap;
 
-pub fn generate_shop_urls() -> HashMap<ShopKind, String> {
+type ShopUrlMap = HashMap<ShopKind, String>;
+
+pub fn generate_shop_urls() -> ShopUrlMap {
     let current_date = FixedOffset::east(3600 * 9)
         .from_utc_datetime(&Utc::now().naive_utc())
         .format("%Y%m%d%H%M%S")
