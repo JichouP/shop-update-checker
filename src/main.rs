@@ -1,5 +1,6 @@
 pub mod domain;
 pub mod infrastructure;
+pub mod service;
 
 #[macro_use]
 extern crate async_trait;
